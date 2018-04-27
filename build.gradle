@@ -78,7 +78,7 @@ def gitCommitUpdate() {
     try {
         def branchout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'commit', 'docker-cloud.yml', 'docker-cloud-prod.yml', '-m', 'Committed updated version of yml file'
+            commandLine 'git', 'commit', 'docker-cloud.yml', 'docker-cloud-prod.yml', 'gradle.properties', '-m', 'Committed updated version of yml file'
             standardOutput = branchout
         }
         return branchout.toString().trim()
