@@ -4,7 +4,7 @@ networks:
 services:
   dummy-app:
     container_name: dummy-app
-    image: consensus/dummy-app:1.0.10-SNAPSHOT
+    image: consensus/dummy-app:1.0.111-SNAPSHOT
     environment:
     - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8001
       -Dspring.profiles.active=int
