@@ -85,7 +85,6 @@ def gitCommitUpdate() {
                         '-m',
                         'Committed updated version of yml file'
 
-            standardOutput = branchout
         }
         return branchout.toString().trim()
     }
@@ -99,7 +98,6 @@ def gitPushUpdate() {
         def branchout = new ByteArrayOutputStream()
         exec {
             commandLine 'git', 'push'
-            standardOutput = branchout
         }
         return branchout.toString().trim()
     }
