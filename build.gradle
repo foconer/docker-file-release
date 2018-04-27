@@ -7,12 +7,10 @@ buildscript {
     }
     dependencies {
         classpath "org.yaml:snakeyaml:1.21"
-        classpath "org.ajoberstar:grgit:2.2.0"
     }
 }
 
 apply plugin: 'groovy'
-apply plugin: "org.ajoberstar.grgit"
 
 task("docker-compose-file-release") {
 
@@ -50,9 +48,10 @@ def updateComposeFileImageVersion(ymlfile, version) {
 
 def incrementVersion(version) {
     def minor = version.substring(version.lastIndexOf('.') + 1)
+    println "minor " + minor
     minor = minor.toInteger() + 1
 
-    String prefix = version.substring(0,version.length() - 1)
+    String prefix = version.substring(0, version.lastIndexOf('.') + 1)
     prefix + minor
 }
 
@@ -78,7 +77,14 @@ def gitCommitUpdate() {
     try {
         def branchout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'commit', 'docker-cloud.yml', 'docker-cloud-prod.yml', 'gradle.properties', '-m', 'Committed updated version of yml file'
+            commandLine 'git',
+                        'commit',
+                        'docker-cloud.yml',
+                        'docker-cloud-prod.yml',
+                        'gradle.properties',
+                        '-m',
+                        'Committed updated version of yml file'
+
             standardOutput = branchout
         }
         return branchout.toString().trim()
