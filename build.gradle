@@ -28,7 +28,7 @@ task("docker-compose-file-release") {
     updateComposeFileImageVersion("docker-cloud.yml", newVersion)
     //updateComposeFileImageVersion("docker-cloud-prod.yml", releaseVersion)
     println grgit.commit(message: 'Update gradle and yml files version', all: true)
-    println grgit.push()
+    println grgit.pus
 }
 
 def updateComposeFileImageVersion(ymlfile, version) {
