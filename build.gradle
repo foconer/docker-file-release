@@ -26,9 +26,10 @@ task("docker-compose-file-release") {
 
     updateGradlePropertiesVersion(newVersion)
     updateComposeFileImageVersion("docker-cloud.yml", newVersion)
-    //updateComposeFileImageVersion("docker-cloud-prod.yml", releaseVersion)
-    println grgit.commit(message: 'Update gradle and yml files version', all: true)
-    println grgit.pus
+    updateComposeFileImageVersion("docker-cloud-prod.yml", releaseVersion)
+
+    println gitCommitUpdate()
+    println gitPushUpdate()
 }
 
 def updateComposeFileImageVersion(ymlfile, version) {
@@ -70,5 +71,33 @@ def writeVersion(File file, String key, version) {
     project.ant.replaceregexp(file: file, byline: true) {
         regexp(pattern: "^(\\s*)$key((\\s*[=|:]\\s*)|(\\s+)).+\$")
         substitution(expression: "\\1$key\\2$version")
+    }
+}
+
+def gitCommitUpdate() {
+    try {
+        def branchout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'commit', 'docker-cloud.yml', 'docker-cloud-prod.yml', '-m', 'Committed updated version of yml file'
+            standardOutput = branchout
+        }
+        return branchout.toString().trim()
+    }
+    catch (ignored) {
+        return null;
+    }
+}
+
+def gitPushUpdate() {
+    try {
+        def branchout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'push'
+            standardOutput = branchout
+        }
+        return branchout.toString().trim()
+    }
+    catch (ignored) {
+        return null;
     }
 }
