@@ -7,10 +7,12 @@ buildscript {
     }
     dependencies {
         classpath "org.yaml:snakeyaml:1.21"
+        classpath "org.ajoberstar:grgit:2.2.0"
     }
 }
 
 apply plugin: 'groovy'
+apply plugin: "org.ajoberstar.grgit"
 
 task("docker-compose-file-release") {
 
@@ -24,7 +26,8 @@ task("docker-compose-file-release") {
 
     updateGradlePropertiesVersion(newVersion)
     updateComposeFileImageVersion("docker-cloud.yml", newVersion)
-    updateComposeFileImageVersion("docker-cloud-prod.yml", releaseVersion)
+    //updateComposeFileImageVersion("docker-cloud-prod.yml", releaseVersion)
+    println grgit.commit(message: 'Update gradle and yml files version', all: true)
 }
 
 def updateComposeFileImageVersion(ymlfile, version) {
