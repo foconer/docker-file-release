@@ -1,0 +1,70 @@
+import org.yaml.snakeyaml.DumperOptions
+import org.yaml.snakeyaml.Yaml
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.yaml:snakeyaml:1.21"
+    }
+}
+
+apply plugin: 'groovy'
+
+task("docker-compose-file-release") {
+
+    def currentVersion = project.version
+    def releaseVersion = currentVersion - "-SNAPSHOT"
+    def newVersion = incrementVersion(releaseVersion) + "-SNAPSHOT"
+
+    println "current version " + project.version
+    println "release version " + releaseVersion
+    println "new version " + newVersion
+
+    updateGradlePropertiesVersion(newVersion)
+    updateComposeFileImageVersion("docker-cloud.yml", newVersion)
+    updateComposeFileImageVersion("docker-cloud-prod.yml", releaseVersion)
+}
+
+def updateComposeFileImageVersion(ymlfile, version) {
+    DumperOptions options = new DumperOptions();
+    options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+    def file = (ymlfile as File).text
+
+    def yaml = new Yaml(options)
+    def dockerCloud = (Map)yaml.load(file)
+
+    dockerCloud["services"]["dummy-app"]["image"] = "consensus/dummy-app:" + version
+
+    def dockerCloudNew = yaml.dump(dockerCloud)
+    def fileToWrite = new File(ymlfile)
+    fileToWrite.write(dockerCloudNew)
+}
+
+def incrementVersion(version) {
+    def minor = version.substring(version.lastIndexOf('.') + 1)
+    minor = minor.toInteger() + 1
+
+    String prefix = version.substring(0,version.length() - 1)
+    prefix + minor
+}
+
+def updateGradlePropertiesVersion(String newVersion) {
+    String oldVersion = project.version as String
+    if (oldVersion != newVersion) {
+        project.version = newVersion
+        project.subprojects?.each { it.version = newVersion }
+
+        File propertiesFile = "gradle.properties" as File
+        writeVersion(propertiesFile, "version", project.version)
+    }
+}
+
+def writeVersion(File file, String key, version) {
+    project.ant.replaceregexp(file: file, byline: true) {
+        regexp(pattern: "^(\\s*)$key((\\s*[=|:]\\s*)|(\\s+)).+\$")
+        substitution(expression: "\\1$key\\2$version")
+    }
+}

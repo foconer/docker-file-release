@@ -1,18 +1,16 @@
 version: '3'
-
 networks:
-  dockercomposefiles_dummy-network:
-
+  dockercomposefiles_dummy-network: null
 services:
-
   dummy-app:
     container_name: dummy-app
-    image: dummy/dummy-app:1.0.1-SNAPSHOT
+    image: consensus/dummy-app:1.0.1-SNAPSHOT
     environment:
-      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8001 -Dspring.profiles.active=int
+    - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8001
+      -Dspring.profiles.active=int
     ports:
-      - 8443:8080
+    - 8443:8080
     volumes:
-      - /var/log/dummy-app:/var/log/
+    - /var/log/dummy-app:/var/log/
     networks:
-      - dockercomposefiles_dummy-network
+    - dockercomposefiles_dummy-network
